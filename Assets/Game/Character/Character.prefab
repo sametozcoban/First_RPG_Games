@@ -121,7 +121,7 @@ MonoBehaviour:
   timeBetweenAttacks: 1.31
   righthandTransform: {fileID: 0}
   lefthandTransform: {fileID: 0}
-  defaultWeapon: {fileID: 0}
+  defaultWeapon: {fileID: 11400000, guid: abebef419c2dbca4b9eb64e9032551ab, type: 2}
 --- !u!114 &1662457168
 MonoBehaviour:
   m_ObjectHideFlags: 0

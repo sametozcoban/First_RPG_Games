@@ -189,7 +189,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5142c432f8a94390a575797cf505891b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 200
+  health: 40
+  position: {x: 0, y: 0, z: 0}
 --- !u!114 &4206053524806030714
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -202,6 +203,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f41ef6b51d561564caf4f5d4a9099126, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &7545900768963105045
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 219327364233211691}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f31ee9bc63354adf9ae3784b9538cac3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  experiencePoints: 0
 --- !u!4 &8468930336654437634 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5123892300482481215, guid: b3c0ac2162ba6d34787d6fd8fb9fef8f, type: 3}

@@ -1,4 +1,5 @@
-﻿using RPG.Core;
+﻿using RPG.Attributes;
+using RPG.Core;
 using UnityEngine;
 
 namespace Combat
@@ -72,10 +73,10 @@ namespace Combat
             return _projectile != null; 
         }
 
-        public void LaunchProjectile(Transform rightHand, Transform leftHand, Health target) //Kullanılacak merminin örneklenmesini sağlayan method.
+        public void LaunchProjectile(Transform rightHand, Transform leftHand, Health target , GameObject instigator) //Kullanılacak merminin örneklenmesini sağlayan method.
         {
             Projectile projectileInstance = Instantiate(_projectile, GetTransform(rightHand, leftHand).position, Quaternion.identity);
-            projectileInstance.SetTarget(target , attackDamage);
+            projectileInstance.SetTarget(target, attackDamage , instigator);
         }
 
         public float GetRange()

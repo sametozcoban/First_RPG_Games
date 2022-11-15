@@ -1,5 +1,6 @@
 ﻿using System;
 using Combat;
+using RPG.Attributes;
 using RPG.Combat;
 using RPG.Commbat;
 using RPG.Core;
@@ -82,11 +83,11 @@ namespace RPG.Combat
             _health = target.GetComponent<Health>();
             if (currentWeapon.HasProjectile()) // Kullanılan if koşulu, silahımızın mermili mi yoksa mermisiz mi olup olmadığı kontrolünü sağlıyor.
             {
-                currentWeapon.LaunchProjectile(righthandTransform,lefthandTransform , _health);
+                currentWeapon.LaunchProjectile(righthandTransform,lefthandTransform , _health , gameObject);
             }
             else
             {
-                _health.TakeDamage(currentWeapon.GetDamage());
+                _health.TakeDamage(gameObject,currentWeapon.GetDamage());
             }
             
         }
@@ -138,6 +139,12 @@ namespace RPG.Combat
             Animator animator = GetComponent<Animator>();
             weapon.Spawn(righthandTransform , lefthandTransform , animator); // Karakter üzerinde bulunan yumruk animasyonunun sword animasyonuna geçtiği kod satırı.
         }
+
+        //public Transform GetEnemyHealth() Transform target değiştirilecek. EnemyHealthDisplay kullanılarak hangi düşman seçilmişsse onun canından düşülecek.
+        //                                  Bunun için Transform target değiştirilecek.
+        //{  
+        //    return target;
+        //}
 
       //public object CaptureState()
       //{

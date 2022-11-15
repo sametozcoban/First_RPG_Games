@@ -874,6 +874,10 @@ PrefabInstance:
       propertyPath: uniqueIdentifier
       value: 676a77b1-61bb-4771-8a62-8a660faca242
       objectReference: {fileID: 0}
+    - target: {fileID: 2421488220535415818, guid: c43fcea967623e24ead0db50c0bf7f03, type: 3}
+      propertyPath: _characterClass
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4172180956419102074, guid: c43fcea967623e24ead0db50c0bf7f03, type: 3}
       propertyPath: m_RootOrder
       value: 2
@@ -929,6 +933,10 @@ PrefabInstance:
     - target: {fileID: 5722397476518303571, guid: c43fcea967623e24ead0db50c0bf7f03, type: 3}
       propertyPath: m_Name
       value: Enemy (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 5722397476518303571, guid: c43fcea967623e24ead0db50c0bf7f03, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6573316602403294203, guid: c43fcea967623e24ead0db50c0bf7f03, type: 3}
       propertyPath: health
@@ -2161,6 +2169,10 @@ PrefabInstance:
       propertyPath: _patrolWay
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 982167752085387053, guid: c43fcea967623e24ead0db50c0bf7f03, type: 3}
+      propertyPath: defaultWeapon
+      value: 
+      objectReference: {fileID: 11400000, guid: d5f96db08d9bac64e9c0ba05e3ddc630, type: 2}
     - target: {fileID: 2136275408959292426, guid: c43fcea967623e24ead0db50c0bf7f03, type: 3}
       propertyPath: uniqueIdentifier
       value: 0cfa6317-913c-4b21-abfb-aacb77755afe
@@ -5965,6 +5977,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 409538, guid: 5a346deceb21d0c4781e67a70fbcc1f6, type: 3}
   m_PrefabInstance: {fileID: 1146942562}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1178328054 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 9207522619913151370, guid: f22850217a6177a4688c287b1fa53f8f, type: 3}
+  m_PrefabInstance: {fileID: 72170195490455314}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &1182257782 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 409538, guid: 5a346deceb21d0c4781e67a70fbcc1f6, type: 3}
@@ -11125,6 +11148,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1600801883268008030, guid: f22850217a6177a4688c287b1fa53f8f, type: 3}
+      propertyPath: _text
+      value: 
+      objectReference: {fileID: 1178328054}
     - target: {fileID: 2504213883828670036, guid: f22850217a6177a4688c287b1fa53f8f, type: 3}
       propertyPath: m_RootOrder
       value: 4
@@ -11136,6 +11163,18 @@ PrefabInstance:
     - target: {fileID: 4665734746656769881, guid: f22850217a6177a4688c287b1fa53f8f, type: 3}
       propertyPath: defaultWeaponName
       value: Unarmed
+      objectReference: {fileID: 0}
+    - target: {fileID: 7853015378556245118, guid: f22850217a6177a4688c287b1fa53f8f, type: 3}
+      propertyPath: startLevel
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7853015378556245118, guid: f22850217a6177a4688c287b1fa53f8f, type: 3}
+      propertyPath: _progression
+      value: 
+      objectReference: {fileID: 11400000, guid: 3bf6243b751147e4abd6462f3a9af0ce, type: 2}
+    - target: {fileID: 9207522619913151370, guid: f22850217a6177a4688c287b1fa53f8f, type: 3}
+      propertyPath: m_isRightToLeft
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f22850217a6177a4688c287b1fa53f8f, type: 3}

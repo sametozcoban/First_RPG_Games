@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using RPG.Attributes;
 using RPG.Core;
 using UnityEngine;
 
@@ -9,6 +10,7 @@ public class Projectile : MonoBehaviour
     [SerializeField] private float bowSpeed = 2f;
 
     Health target = null;
+    private GameObject instigator = null;
     float damage = 0;
 
     private void Start()
@@ -23,10 +25,11 @@ public class Projectile : MonoBehaviour
         bowWay();
     }
 
-    public void SetTarget(Health target , float damage) // Gönderilecek olan mermi için  hedef olarak belirlendiği method.
+    public void SetTarget(Health target , float damage , GameObject instigator) // Gönderilecek olan mermi için  hedef olarak belirlendiği method.
     {
         this.target = target;
         this.damage = damage;
+        this.instigator = instigator;
     }
 
     public void bowWay()
@@ -50,7 +53,7 @@ public class Projectile : MonoBehaviour
     {
         if(other.GetComponent<Health>() != target) return;
         if(target.IsDead()) return;
-        target.TakeDamage(damage);
+        target.TakeDamage(instigator,damage);
         Destroy(gameObject);
     }
 }
