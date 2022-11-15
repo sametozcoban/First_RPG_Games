@@ -4,19 +4,19 @@ using RPG.Combat;
 using RPG.Commbat;
 using RPG.Core;
 using RPG.Movemenent;
+using RPG.Saving;
 using UnityEngine;
 using UnityEngine.Serialization;
 
 namespace RPG.Combat
 {
-    public class Fighter : MonoBehaviour , IAction
+    public class Fighter : MonoBehaviour , IAction // ISaveable
     {
         [SerializeField] private float timeBetweenAttacks = 1.31f;
         [SerializeField] private Transform righthandTransform = null;
         [SerializeField] private Transform lefthandTransform = null;
         [SerializeField]  Weapon defaultWeapon = null;
-        [SerializeField] private string defaultWeaponName = "Unarmed";
-        
+
         Transform target;
         private Health _health;
         Weapon currentWeapon = null;
@@ -25,8 +25,11 @@ namespace RPG.Combat
         private void Start()
         {
             _health = GetComponent<Health>();
-            //Weapon weapon = Resources.Load<Weapon>(defaultWeaponName); 
-            EquippedWeapon(defaultWeapon);
+            if (currentWeapon == null)
+            { 
+                EquippedWeapon(defaultWeapon);
+            }
+            
         }
 
         private void Update()
@@ -136,5 +139,16 @@ namespace RPG.Combat
             weapon.Spawn(righthandTransform , lefthandTransform , animator); // Karakter üzerinde bulunan yumruk animasyonunun sword animasyonuna geçtiği kod satırı.
         }
 
+      //public object CaptureState()
+      //{
+      //    return currentWeapon.name;
+      //}
+
+      //public void RestoreState(object state)
+      //{
+      //    string weaponName = (string) state;
+      //    Weapon weapon = Resources.Load<Weapon>(weaponName); 
+      //    EquippedWeapon(weapon);
+      //}
     }
 }

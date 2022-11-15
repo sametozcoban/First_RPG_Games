@@ -26,7 +26,7 @@ namespace Combat
             if (equippedPrefab != null)
             {
                 var handTransform = GetTransform(rightHand, leftHand);
-                GameObject weapon = Instantiate(equippedPrefab, handTransform);
+                 GameObject weapon = Instantiate(equippedPrefab, handTransform);
                 weapon.name = weaponName;
             }
 
