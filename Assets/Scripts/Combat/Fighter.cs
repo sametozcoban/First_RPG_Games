@@ -6,6 +6,7 @@ using RPG.Commbat;
 using RPG.Core;
 using RPG.Movemenent;
 using RPG.Saving;
+using RPG.Stats;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -81,13 +82,14 @@ namespace RPG.Combat
         {
             if(target == null) {return;}
             _health = target.GetComponent<Health>();
+            float damage = GetComponent<BaseStats>().GetStat(Stat.Damage);
             if (currentWeapon.HasProjectile()) // Kullanılan if koşulu, silahımızın mermili mi yoksa mermisiz mi olup olmadığı kontrolünü sağlıyor.
             {
-                currentWeapon.LaunchProjectile(righthandTransform,lefthandTransform , _health , gameObject);
+                currentWeapon.LaunchProjectile(righthandTransform,lefthandTransform , _health , gameObject, damage);
             }
             else
             {
-                _health.TakeDamage(gameObject,currentWeapon.GetDamage());
+                _health.TakeDamage(gameObject, damage);
             }
             
         }

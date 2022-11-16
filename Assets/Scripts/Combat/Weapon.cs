@@ -73,10 +73,10 @@ namespace Combat
             return _projectile != null; 
         }
 
-        public void LaunchProjectile(Transform rightHand, Transform leftHand, Health target , GameObject instigator) //Kullanılacak merminin örneklenmesini sağlayan method.
+        public void LaunchProjectile(Transform rightHand, Transform leftHand, Health target , GameObject instigator , float calculatedDamage) //Kullanılacak merminin örneklenmesini sağlayan method.
         {
             Projectile projectileInstance = Instantiate(_projectile, GetTransform(rightHand, leftHand).position, Quaternion.identity);
-            projectileInstance.SetTarget(target, attackDamage , instigator);
+            projectileInstance.SetTarget(target, calculatedDamage , instigator);
         }
 
         public float GetRange()

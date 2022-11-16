@@ -79,9 +79,21 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: -2348642413358940849, guid: b3c0ac2162ba6d34787d6fd8fb9fef8f, type: 3}
+      propertyPath: startLevel
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: -2348642413358940849, guid: b3c0ac2162ba6d34787d6fd8fb9fef8f, type: 3}
+      propertyPath: _progression
+      value: 
+      objectReference: {fileID: 11400000, guid: 3bf6243b751147e4abd6462f3a9af0ce, type: 2}
+    - target: {fileID: -2348642413358940849, guid: b3c0ac2162ba6d34787d6fd8fb9fef8f, type: 3}
       propertyPath: _characterClass
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -2348642413358940849, guid: b3c0ac2162ba6d34787d6fd8fb9fef8f, type: 3}
+      propertyPath: levelUpParticleEffect
+      value: 
+      objectReference: {fileID: 7767194902402486501, guid: 237edde7d41a8c44484107b43e3f0b7b, type: 3}
     - target: {fileID: -2064694040150450865, guid: b3c0ac2162ba6d34787d6fd8fb9fef8f, type: 3}
       propertyPath: uniqueIdentifier
       value: player
@@ -189,7 +201,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5142c432f8a94390a575797cf505891b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 40
   position: {x: 0, y: 0, z: 0}
 --- !u!114 &4206053524806030714
 MonoBehaviour:

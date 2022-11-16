@@ -2177,6 +2177,10 @@ PrefabInstance:
       propertyPath: uniqueIdentifier
       value: 0cfa6317-913c-4b21-abfb-aacb77755afe
       objectReference: {fileID: 0}
+    - target: {fileID: 2421488220535415818, guid: c43fcea967623e24ead0db50c0bf7f03, type: 3}
+      propertyPath: _characterClass
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 4172180956419102074, guid: c43fcea967623e24ead0db50c0bf7f03, type: 3}
       propertyPath: m_RootOrder
       value: 3
@@ -11148,6 +11152,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 72170196643501731, guid: f22850217a6177a4688c287b1fa53f8f, type: 3}
+      propertyPath: health
+      value: 500
+      objectReference: {fileID: 0}
     - target: {fileID: 1600801883268008030, guid: f22850217a6177a4688c287b1fa53f8f, type: 3}
       propertyPath: _text
       value: 
@@ -11166,7 +11174,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7853015378556245118, guid: f22850217a6177a4688c287b1fa53f8f, type: 3}
       propertyPath: startLevel
-      value: 3
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 7853015378556245118, guid: f22850217a6177a4688c287b1fa53f8f, type: 3}
       propertyPath: _progression

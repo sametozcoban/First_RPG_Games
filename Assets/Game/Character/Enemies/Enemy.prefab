@@ -75,6 +75,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: -2348642413358940849, guid: b3c0ac2162ba6d34787d6fd8fb9fef8f, type: 3}
+      propertyPath: _progression
+      value: 
+      objectReference: {fileID: 11400000, guid: 3bf6243b751147e4abd6462f3a9af0ce, type: 2}
+    - target: {fileID: -2348642413358940849, guid: b3c0ac2162ba6d34787d6fd8fb9fef8f, type: 3}
       propertyPath: _characterClass
       value: 1
       objectReference: {fileID: 0}
@@ -275,3 +279,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 30
+  position: {x: 0, y: 0, z: 0}

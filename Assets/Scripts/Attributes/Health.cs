@@ -8,20 +8,25 @@ namespace RPG.Attributes
 {
     public class Health : MonoBehaviour , ISaveable
     {
-        [SerializeField] float health = 20f;
+        [SerializeField] float regenerationPercentage = 70;
+        [SerializeField] float health = -1f;
+        
+        bool isDead = false;
+        public Vector3 position;
         
         private void Start()
         {
-            health = GetComponent<BaseStats>().GetHealth();
-            
+            GetComponent<BaseStats>().onLevelUp += RegenerateHealth;
+            if (health < 0)
+            {
+                health = GetComponent<BaseStats>().GetStat(Stat.Health);   
+            }
         }
-
-        bool isDead = false;
-        public Vector3 position;
-
+        
         public void TakeDamage(GameObject instigator, float damage)
         {
             health = Mathf.Max(health - damage, 0);
+            
             if (health == 0)
             {
                 Die();
@@ -31,19 +36,33 @@ namespace RPG.Attributes
             print(health);
         }
 
-        private void AwardExperince(GameObject instigator) /* Enemy öldüğü durumda çalıştırılarak hasarı veren kişiye experience ekliyoruz. 
-                                                                Şuan için sabit return 10 dönüyor daha sonra düşmana göre değişicek. */
+        public float GetHealthPoints()
         {
-            float _stats = GetComponent<BaseStats>().GetExperience();
+            return health;
+        }
+        public float GetMaxHealthPoints()
+        {
+            return GetComponent<BaseStats>().GetStat(Stat.Health);
+        }
+
+        private void AwardExperince(GameObject instigator) /* Enemy öldüğü durumda çalıştırılarak hasarı veren kişiye experience ekliyoruz. 
+                                                                Stat.ExperienceReward öldürülen her düşman için eklenecek olan deneyim puanı. */
+        {
+            float _stats = GetComponent<BaseStats>().GetStat(Stat.ExperienceReward);
             Experience _experience = instigator.GetComponent<Experience>();
             if(_experience == null) return;
             
             _experience.GainExperince(_stats);
         }
+        private void RegenerateHealth() //Level atladığımızda canın yeninlemesi için kullanılacak olan method.
+        {
+            float regenHealthPoint = GetComponent<BaseStats>().GetStat(Stat.Health) *(regenerationPercentage / 100);
+            health = Mathf.Max(health, regenHealthPoint);
+        }
 
         public float HealthPercentage()
         {
-            return 100 * (health / GetComponent<BaseStats>().GetHealth());
+            return 100 * (health / GetComponent<BaseStats>().GetStat(Stat.Health));
         }
 
         public bool IsDead()
