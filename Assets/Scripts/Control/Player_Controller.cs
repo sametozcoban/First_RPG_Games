@@ -7,7 +7,10 @@ using UnityEngine;
 using RPG.Movemenent;
 using RPG.Combat;
 using RPG.Core;
+using UnityEngine.AI;
 using UnityEngine.EventSystems;
+using UnityEngine.UIElements;
+using Cursor = UnityEngine.Cursor;
 
 namespace RPG.Control
 {
@@ -18,13 +21,6 @@ namespace RPG.Control
         private Ray _ray;
         private Fighter _fighter;
 
-        enum CursorType
-        {
-            None,
-            Movement,
-            Combat,
-            UI
-        }
         
         [System.Serializable]
         struct CursorMapping
@@ -35,7 +31,8 @@ namespace RPG.Control
         }
 
         [SerializeField]  CursorMapping[] cursorMapping = null;
-        
+        [SerializeField]  float maxDistance = 1f;
+        [SerializeField]  float maxPathLength = 40f;
 
         private void Start()
         {
@@ -45,18 +42,18 @@ namespace RPG.Control
         }  
         void Update()
         {
+            if (InteractWithComponent()) return;
             if(InteractWithUI()) return;
             if (_health.IsDead())
             {
                 SetCursor(CursorType.None);
                 return;
             }
-            if(IntCombat()) return;
             if(IntMovement()) return;
             
             SetCursor(CursorType.None);
         }
-
+        
         private bool InteractWithUI()
         {
             if (EventSystem.current.IsPointerOverGameObject()) // UI parçasına tıklayıp tıklamadığımızı kontrol ettiğimiz bir durum.
@@ -67,55 +64,106 @@ namespace RPG.Control
 
             return false;
         }
-
-        /* "IntCombat()" Combat özelinde target üzerinde gezinirken saldırılabilir olup olmadığının gösterilmeisini sağlayacak bir method.
-            Yürünürken imleç saldırabilir olurken farklı bir imleç kullanılmasını sağlaycak. */
-        public bool IntCombat() 
+        
+        private bool InteractWithComponent()
         {
-            RaycastHit[] hits = Physics.RaycastAll(ScreenPointToRay());
-            
+            RaycastHit[] hits = RayCastAllSorted() ;
+
             foreach (RaycastHit hit in hits)
             {
-                    CombatTarget target = hit.transform.GetComponent<CombatTarget>();
-                    if(target == null) continue;
-                    GameObject targetGameObject = target.gameObject;
-                    if (!GetComponent<Fighter>().CanAttack(target.gameObject))
-                    {
-                        continue;
-                    }
+                IRaycastable [] raycastables= hit.transform.GetComponents<IRaycastable>();
 
-                    if (Input.GetMouseButton(0))
+                foreach (IRaycastable raycastable in raycastables)
+                {
+                    if (raycastable.handleRaycast(this))
                     {
-                        Debug.Log("Attack Player");
-                        GetComponent<Fighter>().Attack(target.gameObject);
+                        SetCursor(raycastable.GetCursorType()); // Raycast yapılıyor, raycastın yapıldığı objeye göre  CursorType dönerek hangi enum için geçerli ise o cursorun şeklini alıyor.
+                        return true;
                     }
-
-                    SetCursor(CursorType.Combat);
-                    return true;
+                }
             }
+
             return false;
         }
-        
+
+        RaycastHit[] RayCastAllSorted() /*Uzaklıklara göre cursor değişimini kontrol ettiğimiz kısım.
+                                          Arka arkaya bulunan objelerden ilk raycast atılan durumda ikinci objeye raycast atıldığında aynı cursor çıkmamaası durumunun kontorlünün yapıldığı durum. */
+        {
+            RaycastHit [] hits = Physics.RaycastAll(ScreenPointToRay());
+            float[] distances = new float[hits.Length]; //hits arrayı uzunluğunda bir array oluşturuyoruz.
+
+            for (int i = 0; i < hits.Length; i++)
+            {
+                distances[i] = hits[i].distance; // Eleman sayılarını birbirine eşitlerik. 1-1, 2-2 gibi.
+            }
+            Array.Sort(distances, hits); // Hitslerin sıralamasını yaptık.
+
+            return hits;
+        }
+
+      
+       
         /* "IntMovement()" World dışında bir noktaya tıklandığı zaman hareket edilemeyeceğinin uyarısını veren bir method.
             Aynı zaman da yürünülebilir kısımlarıda kontrol edip yürümeyi sağlayan method. */
         public bool IntMovement()
         {
-            _ray = ScreenPointToRay(); // Ray direction == _ray(Mouse position.)
-            RaycastHit hit;
-            bool hasHit = Physics.Raycast(_ray, out hit);
-
+            //_ray = ScreenPointToRay(); // Ray direction == _ray(Mouse position.)
+           //RaycastHit hit;
+           //bool hasHit = Physics.Raycast(_ray, out hit);
+            Vector3 target;
+            bool hasHit = RayCastNavMesh(out target);
             if (hasHit) 
             {
                 if ((Input.GetMouseButton(0))) 
                 {
-                    _mover.StartMoveAction(hit.point , 1f);
+                    _mover.StartMoveAction(target , 1f);
                 }
                 SetCursor(CursorType.Movement);
                 return true;
             }
             return false;
         }
+
+        bool RayCastNavMesh(out Vector3 target)
+        {
+            target = new Vector3();
+            _ray = ScreenPointToRay(); // Ray direction == _ray(Mouse position.)
+            RaycastHit hit;
+            bool hasHit = Physics.Raycast(_ray, out hit);
+            if (!hasHit) return false;
+            
+            NavMeshHit navMeshHit;
+            bool navMeshControl = NavMesh.SamplePosition(hit.point, out navMeshHit, maxDistance, NavMesh.AllAreas);
+            if (!navMeshControl) return false;
+            
+            target = navMeshHit.position;
+
+            NavMeshPath path = new NavMeshPath();
+            bool hasPath = NavMesh.CalculatePath(transform.position, target, NavMesh.AllAreas, path); //Navmesh üzerin de gidilecek yolun hesaplanması.
+
+            if (!hasPath) return false;
+            if (path.status != NavMeshPathStatus.PathComplete) return false;
+            if (GetPathLength(path) > maxPathLength) return false;
+            
+            return true;
+        }
         
+        /* Bu noktada hesaplanan yol gidilebilir olması için belirlenen "GetPathLength(path) > maxPathLength" koşulunu sağlaması için path uzunluğunu bulmak için kullandığımız method.
+        "path.corners" path üzerinde gidilecek olan noktaların Vector3 hali ile tutulmasını sağlıyor.
+        "for" döngüsü kullanarak aralarında ki farkı bulup "total değişkenimize ekliyoruz.
+        "return total" den gelen float değer "GetPathLength(path) > maxPathLength" koşulunu sağlıyor ise hareket edebiliyoruz sağlamıyor ise false değer dönderiyoruz. */
+        private float GetPathLength(NavMeshPath path) 
+        {
+            float total = 0;
+            if (path.corners.Length < 2) return total;
+            for (int i = 0; i < path.corners.Length - 1 ; i++)
+            {
+                total += Vector3.Distance(path.corners[i], path.corners[i + 1]);
+            }
+
+            return total;
+        }
+
         private void SetCursor(CursorType type)
         {
             CursorMapping mapping = GetCursorMapping(type);

@@ -70,10 +70,7 @@ namespace RPG.Movemenent
             /* Global değerden yerel olan değere dönüştürüyoruz. Nav mesh üzerinden alınan değerler global(x,y,z) olduğundan dolayı animator için kullanışlı değil.
                Bunun önüne geçmek için InverseTransformDirection(Vector 3 ......) kullanarak yerel değere dönüştürerek animatorun anlayacabileceği değerlere dönüştürüyoruz.3-5 birim ileri gibi. */
             Vector3 velocity = _navMeshAgent.velocity;
-            Vector3
-                localVelocity =
-                    transform.InverseTransformDirection(
-                        velocity); // Convert Local value relative the character. Using InverseTransformDirection(velocity)
+            Vector3 localVelocity = transform.InverseTransformDirection(velocity); // Convert Local value relative the character. Using InverseTransformDirection(velocity)
     
             float speed = localVelocity.z;
             GetComponent<Animator>().SetFloat("forwardSpeed", speed);

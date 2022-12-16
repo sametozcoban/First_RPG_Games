@@ -3,11 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using Combat;
+using RPG.Control;
 using UnityEngine;
 
 namespace RPG.Combat
 {
-    public class WeaponPickup : MonoBehaviour
+    public class WeaponPickup : MonoBehaviour, IRaycastable
     {
         // Kılıç veya farklı bir savaş aletinde ki collider trigger olduğunda Figter scriptinde ki EquippedWeapon methoduna aldığımız Weaponu göndererek kuşandık.
         [SerializeField]  Weapon weapon = null;
@@ -17,9 +18,14 @@ namespace RPG.Combat
         {
             if (other.gameObject.tag == "Player")
             {
-                other.GetComponent<Fighter>().EquippedWeapon(weapon);
-                StartCoroutine(HideForSeconds(respawnTime));
+                PickUp(other.GetComponent<Fighter>());
             }
+        }
+
+        private void PickUp(Fighter fighter)
+        {
+            fighter.EquippedWeapon(weapon);
+            StartCoroutine(HideForSeconds(respawnTime));
         }
 
         IEnumerator HideForSeconds(float seconds)
@@ -37,6 +43,20 @@ namespace RPG.Combat
                 child.gameObject.SetActive(shouldShow); /* Child olan weaponun aktifliğini duruma göre true ya da false dönderiyoruz.
                                                         Alındıktan sonra geçen süreye göre görünüp görünmeyeceğine karar verdiğimiz nokta. */
             }
+        }
+
+        public bool handleRaycast(Player_Controller callingController)
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                PickUp(callingController.GetComponent<Fighter>());
+            }
+            return true;
+        }
+        
+        public CursorType GetCursorType() //PickUp cursor değişimini weaponpick up içerisinde yaptık.
+        {
+            return CursorType.PickUp;
         }
     }
 }
