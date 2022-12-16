@@ -7,6 +7,7 @@ using UnityEngine;
 using RPG.Movemenent;
 using RPG.Combat;
 using RPG.Core;
+using UnityEngine.EventSystems;
 
 namespace RPG.Control
 {
@@ -17,6 +18,25 @@ namespace RPG.Control
         private Ray _ray;
         private Fighter _fighter;
 
+        enum CursorType
+        {
+            None,
+            Movement,
+            Combat,
+            UI
+        }
+        
+        [System.Serializable]
+        struct CursorMapping
+        {
+            public CursorType type;
+            public Texture2D texture;
+            public Vector2 hotspot;
+        }
+
+        [SerializeField]  CursorMapping[] cursorMapping = null;
+        
+
         private void Start()
         {
             _health = GetComponent<Health>();
@@ -25,12 +45,29 @@ namespace RPG.Control
         }  
         void Update()
         {
-            if(_health.IsDead()) return;
-            
+            if(InteractWithUI()) return;
+            if (_health.IsDead())
+            {
+                SetCursor(CursorType.None);
+                return;
+            }
             if(IntCombat()) return;
             if(IntMovement()) return;
+            
+            SetCursor(CursorType.None);
         }
-        
+
+        private bool InteractWithUI()
+        {
+            if (EventSystem.current.IsPointerOverGameObject()) // UI parçasına tıklayıp tıklamadığımızı kontrol ettiğimiz bir durum.
+            {
+                SetCursor(CursorType.UI);
+                return true;
+            }
+
+            return false;
+        }
+
         /* "IntCombat()" Combat özelinde target üzerinde gezinirken saldırılabilir olup olmadığının gösterilmeisini sağlayacak bir method.
             Yürünürken imleç saldırabilir olurken farklı bir imleç kullanılmasını sağlaycak. */
         public bool IntCombat() 
@@ -52,11 +89,13 @@ namespace RPG.Control
                         Debug.Log("Attack Player");
                         GetComponent<Fighter>().Attack(target.gameObject);
                     }
+
+                    SetCursor(CursorType.Combat);
                     return true;
             }
             return false;
         }
-            
+        
         /* "IntMovement()" World dışında bir noktaya tıklandığı zaman hareket edilemeyeceğinin uyarısını veren bir method.
             Aynı zaman da yürünülebilir kısımlarıda kontrol edip yürümeyi sağlayan method. */
         public bool IntMovement()
@@ -70,10 +109,29 @@ namespace RPG.Control
                 if ((Input.GetMouseButton(0))) 
                 {
                     _mover.StartMoveAction(hit.point , 1f);
-                    return true;
                 }
+                SetCursor(CursorType.Movement);
+                return true;
             }
             return false;
+        }
+        
+        private void SetCursor(CursorType type)
+        {
+            CursorMapping mapping = GetCursorMapping(type);
+            Cursor.SetCursor(mapping.texture, mapping.hotspot, CursorMode.Auto);
+        }
+
+        private CursorMapping GetCursorMapping(CursorType type)
+        {
+            foreach (CursorMapping mapping in cursorMapping)
+            {
+                if (mapping.type == type)
+                {
+                    return mapping;
+                }
+            }
+            return cursorMapping[0];
         }
 
         private static Ray ScreenPointToRay()

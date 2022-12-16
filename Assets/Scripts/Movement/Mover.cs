@@ -27,12 +27,18 @@ namespace RPG.Movemenent
         private Ray _ray;
     
         // Start is called before the first frame update
-        void Start()
+
+        private void Awake()
         {
             _health = GetComponent<Health>();
             _navMeshAgent = GetComponent<NavMeshAgent>();
             _fighter = GetComponent<Fighter>();
             //_actionScheduler = GetComponent<ActionScheduler>();
+        }
+
+        void Start()
+        {
+        
         }
     
         // Update is called once per frame
@@ -87,9 +93,9 @@ namespace RPG.Movemenent
         public void RestoreState(object state) // Save alınan noktaya geri dönmek için kullanılan method.
         {
             SerializableVector3 position = (SerializableVector3)state;
-            GetComponent<NavMeshAgent>().enabled = false; // NavMesh konumu değiştirirken load yaparken bize karışmanı engellemek için yapılan işlem.
+            _navMeshAgent.enabled = false; // NavMesh konumu değiştirirken load yaparken bize karışmanı engellemek için yapılan işlem.
             transform.position = position.ToVector();
-            GetComponent<NavMeshAgent>().enabled = true;  
+            _navMeshAgent.enabled = true;  
         }
 
     

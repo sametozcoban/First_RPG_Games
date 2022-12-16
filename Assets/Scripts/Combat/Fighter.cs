@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Combat;
 using RPG.Attributes;
 using RPG.Combat;
@@ -12,7 +13,7 @@ using UnityEngine.Serialization;
 
 namespace RPG.Combat
 {
-    public class Fighter : MonoBehaviour , IAction // ISaveable
+    public class Fighter : MonoBehaviour , IAction , IModifierProvider// ISaveable
     {
         [SerializeField] private float timeBetweenAttacks = 1.31f;
         [SerializeField] private Transform righthandTransform = null;
@@ -121,6 +122,22 @@ namespace RPG.Combat
         {
             GetComponent<Animator>().SetTrigger("stopAttack");
             GetComponent<Animator>().ResetTrigger("attack");
+        }
+        
+        public IEnumerable<float> GetAdditiveModifier(Stat stat)
+        {
+            if (stat == Stat.Damage)
+            {
+                yield return currentWeapon.GetDamage();
+            }
+        }
+
+        public IEnumerable<float> GetPercentageModifier(Stat stat)
+        {
+            if (stat == Stat.Damage)
+            {
+                yield return currentWeapon.GetPercentage();
+            }
         }
 
         public bool CanAttack(GameObject combatTarget)

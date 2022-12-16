@@ -91,6 +91,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -2348642413358940849, guid: b3c0ac2162ba6d34787d6fd8fb9fef8f, type: 3}
+      propertyPath: shouldUseModifiers
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -2348642413358940849, guid: b3c0ac2162ba6d34787d6fd8fb9fef8f, type: 3}
       propertyPath: levelUpParticleEffect
       value: 
       objectReference: {fileID: 7767194902402486501, guid: 237edde7d41a8c44484107b43e3f0b7b, type: 3}
@@ -201,6 +205,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5142c432f8a94390a575797cf505891b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  regenerationPercentage: 70
+  health: -1
   position: {x: 0, y: 0, z: 0}
 --- !u!114 &4206053524806030714
 MonoBehaviour:
@@ -214,6 +220,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f41ef6b51d561564caf4f5d4a9099126, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cursorMapping:
+  - type: 0
+    texture: {fileID: 2800000, guid: 21628736160fcc9488493401da3ef621, type: 3}
+    hotspot: {x: 0, y: 0}
+  - type: 1
+    texture: {fileID: 2800000, guid: 8859fce41c5d0a148ad0b7eebfca7fe9, type: 3}
+    hotspot: {x: 0, y: 0}
+  - type: 2
+    texture: {fileID: 2800000, guid: 45d8aea3ad483cf4fb21e75f90f795d9, type: 3}
+    hotspot: {x: 0, y: 0}
+  - type: 3
+    texture: {fileID: 2800000, guid: 2a2b4775272c890448e1bd6239fdfc84, type: 3}
+    hotspot: {x: 0, y: 0}
 --- !u!114 &7545900768963105045
 MonoBehaviour:
   m_ObjectHideFlags: 0
