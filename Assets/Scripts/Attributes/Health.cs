@@ -1,5 +1,6 @@
 ﻿using RPG.Saving;
 using System;
+using GameDevTV.Utils;
 using RPG.Core;
 using RPG.Stats;
 using UnityEngine;
@@ -10,6 +11,7 @@ namespace RPG.Attributes
 {
     public class Health : MonoBehaviour , ISaveable
     {
+       
         [SerializeField] float regenerationPercentage = 70;
         [SerializeField] TakeDamageEvent takeDamage;
         [SerializeField] UnityEvent onDie;
@@ -19,26 +21,47 @@ namespace RPG.Attributes
         {
         }
 
-       float health = -1f ;
+       LazyValue<float> health  ;
 
         bool isDead = false;
         public Vector3 position;
+
+        private void Awake()
+        {
+            health = new LazyValue<float>(GetInitialHealth);
+        }
+        
+        private float GetInitialHealth()
+        {
+            return GetComponent<BaseStats>().GetStat(Stat.Health);
+        }
         
         private void Start()
         {
-            GetComponent<BaseStats>().onLevelUp += RegenerateHealth;
-            if (health < 0)
-            {
-                health = GetComponent<BaseStats>().GetStat(Stat.Health);   
-                Debug.Log("Health is : " + health);
-            }
+            health.ForceUnit();
         }
+        private void OnEnable() {
+            GetComponent<BaseStats>().onLevelUp += RegenerateHealth;
+        }
+        private void OnDisable() {
+            GetComponent<BaseStats>().onLevelUp -= RegenerateHealth;
+        }
+
+        //private void Start()
+        //{
+        //    GetComponent<BaseStats>().onLevelUp += RegenerateHealth;
+        //    if (health < 0)
+        //    {
+        //        health = GetComponent<BaseStats>().GetStat(Stat.Health);   
+        //        Debug.Log("Health is : " + health);
+        //    }
+        //}
         
         public void TakeDamage(GameObject instigator, float damage)
         {
-            health = Mathf.Max(health - damage, 0);
+            health.value = Mathf.Max(health.value - damage, 0);
             
-            if (health == 0)
+            if (health.value == 0)
             {
                 onDie.Invoke();
                 Die();
@@ -53,7 +76,7 @@ namespace RPG.Attributes
 
         public float GetHealthPoints()
         {
-            return health;
+            return health.value;
         }
         public float GetMaxHealthPoints()
         {
@@ -72,7 +95,7 @@ namespace RPG.Attributes
         private void RegenerateHealth() //Level atladığımızda canın yeninlemesi için kullanılacak olan method.
         {
             float regenHealthPoint = GetComponent<BaseStats>().GetStat(Stat.Health) *(regenerationPercentage / 100);
-            health = Mathf.Max(health, regenHealthPoint);
+            health.value = Mathf.Max(health.value, regenHealthPoint);
         }
 
         public float HealthPercentage()
@@ -82,7 +105,7 @@ namespace RPG.Attributes
 
         public float GetFraction()
         {
-            return (health / GetComponent<BaseStats>().GetStat(Stat.Health));
+            return (health.value / GetComponent<BaseStats>().GetStat(Stat.Health));
         }
 
         public bool IsDead()
@@ -106,9 +129,9 @@ namespace RPG.Attributes
 
         public void RestoreState(object state)
         {
-            health = (float)state;
+            health.value = (float)state;
 
-            if (health == 0) // Save noktasında Sağlık sıfır olan herkes ölü olduğundan bunu da yakalayıp o sahnede ölü olarak kalmasını sağlıyoruz.
+            if (health.value == 0) // Save noktasında Sağlık sıfır olan herkes ölü olduğundan bunu da yakalayıp o sahnede ölü olarak kalmasını sağlıyoruz.
             {
                 Die();
             }

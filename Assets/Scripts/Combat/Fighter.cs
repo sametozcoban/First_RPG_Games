@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Combat;
+using GameDevTV.Utils;
 using RPG.Attributes;
 using RPG.Combat;
 using RPG.Commbat;
@@ -22,17 +23,24 @@ namespace RPG.Combat
 
         Transform target;
         private Health _health;
-        Weapon currentWeapon = null;
+        LazyValue<Weapon> currentWeapon ;
         private float timeSinceLastAttack = Mathf.Infinity;
+
+        private void Awake()
+        {
+            currentWeapon = new LazyValue<Weapon>(SetupDefaultWeapon);
+        }
+
+        private Weapon SetupDefaultWeapon()
+        {
+            AttachWeapon(defaultWeapon);
+            return defaultWeapon;
+        }
 
         private void Start()
         {
             _health = GetComponent<Health>();
-            if (currentWeapon == null)
-            { 
-                EquippedWeapon(defaultWeapon);
-            }
-            
+            currentWeapon.ForceInit();
         }
 
         private void Update()
@@ -53,7 +61,7 @@ namespace RPG.Combat
                 }
                 else 
                 {
-                    GetComponent<Mover>().Cancel(currentWeapon.GetRange());
+                    GetComponent<Mover>().Cancel(currentWeapon.value.GetRange());
                     AttackBehaviour();
                 }
             }
@@ -84,9 +92,9 @@ namespace RPG.Combat
             if(target == null) {return;}
             _health = target.GetComponent<Health>();
             float damage = GetComponent<BaseStats>().GetStat(Stat.Damage);
-            if (currentWeapon.HasProjectile()) // Kullanılan if koşulu, silahımızın mermili mi yoksa mermisiz mi olup olmadığı kontrolünü sağlıyor.
+            if (currentWeapon.value.HasProjectile()) // Kullanılan if koşulu, silahımızın mermili mi yoksa mermisiz mi olup olmadığı kontrolünü sağlıyor.
             {
-                currentWeapon.LaunchProjectile(righthandTransform,lefthandTransform , _health , gameObject, damage);
+                currentWeapon.value.LaunchProjectile(righthandTransform,lefthandTransform , _health , gameObject, damage);
             }
             else
             {
@@ -103,7 +111,7 @@ namespace RPG.Combat
         private bool GetIsInRange() /* Karakter ile target arasında ki poziyonun uzaklığını true veya false olarak return ettirip
                                      Combat veya Movement methodlarını ona göre çağırdık. */
         {
-            return Vector3.Distance(transform.position, target.position) < currentWeapon.GetRange();
+            return Vector3.Distance(transform.position, target.position) < currentWeapon.value.GetRange();
         }
 
         public void Attack(GameObject combatTarget)
@@ -128,7 +136,7 @@ namespace RPG.Combat
         {
             if (stat == Stat.Damage)
             {
-                yield return currentWeapon.GetDamage();
+                yield return currentWeapon.value.GetDamage();
             }
         }
 
@@ -136,7 +144,7 @@ namespace RPG.Combat
         {
             if (stat == Stat.Damage)
             {
-                yield return currentWeapon.GetPercentage();
+                yield return currentWeapon.value.GetPercentage();
             }
         }
 
@@ -154,7 +162,12 @@ namespace RPG.Combat
         public void EquippedWeapon(Weapon weapon) /* Karakterimiz doğduğunda eline sword instantiate ediyoruz,
                                                      Vurmak istediğinde animtor override controller ile sword animasyonuna geçiyoruz. */
         {
-            currentWeapon = weapon;
+            currentWeapon.value = weapon;
+            AttachWeapon(weapon);
+        }
+
+        private void AttachWeapon(Weapon weapon)
+        {
             Animator animator = GetComponent<Animator>();
             weapon.Spawn(righthandTransform , lefthandTransform , animator); // Karakter üzerinde bulunan yumruk animasyonunun sword animasyonuna geçtiği kod satırı.
         }
@@ -165,16 +178,16 @@ namespace RPG.Combat
         //    return target;
         //}
 
-      //public object CaptureState()
-      //{
-      //    return currentWeapon.name;
-      //}
+        public object CaptureState()
+        {
+            return currentWeapon.value.name;
+        }
 
-      //public void RestoreState(object state)
-      //{
-      //    string weaponName = (string) state;
-      //    Weapon weapon = Resources.Load<Weapon>(weaponName); 
-      //    EquippedWeapon(weapon);
-      //}
+        public void RestoreState(object state)
+        {
+                string weaponName = (string) state;
+                Weapon weapon = Resources.Load<Weapon>(weaponName); 
+                EquippedWeapon(weapon); 
+        }
     }
 }

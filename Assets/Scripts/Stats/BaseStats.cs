@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using GameDevTV.Utils;
 using RPG.Attributes;
 using UnityEngine;
 
@@ -15,13 +16,24 @@ namespace RPG.Stats
         [SerializeField] bool shouldUseModifiers = false;
 
         public event Action onLevelUp;
+        private Experience experience;
         
-        int currentLevel = 0;
+        LazyValue<int> currentLevel ;
+
+        private void Awake()
+        {
+            currentLevel = new LazyValue<int>(CalculateLevel);
+            experience = GetComponent<Experience>();
+        }
+
         private void Start()
         {
-            currentLevel = CalculateLevel();
-            Experience experience = GetComponent<Experience>();
+            currentLevel.ForceInit();
             
+        }
+
+        private void OnEnable()
+        {
             if (experience != null)
             {
                 experience.onExperienceGained += UpdateLevel;
@@ -32,9 +44,9 @@ namespace RPG.Stats
         {
             int newLevel = CalculateLevel();
 
-            if (newLevel > currentLevel)
+            if (newLevel > currentLevel.value)
             {
-                currentLevel = newLevel;
+                currentLevel.value = newLevel;
                 LevelUpEffect();
                 onLevelUp();
             }
@@ -90,11 +102,7 @@ namespace RPG.Stats
 
         public int GetLevel()
         {
-            if (currentLevel < 1)
-            {
-                currentLevel = CalculateLevel();
-            }
-            return currentLevel;
+            return currentLevel.value;
         }
 
         public int CalculateLevel()
