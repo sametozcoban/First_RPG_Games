@@ -44,10 +44,10 @@ namespace RPG.SceneManagement
             DontDestroyOnLoad(gameObject);
             
             Fader fader = FindObjectOfType<Fader>();
-
-            yield return fader.FadeOut(fadeOutTime);
-
             SavinWrapper wrapper = FindObjectOfType<SavinWrapper>();
+            
+            yield return fader.FadeOut(fadeOutTime);
+            
             wrapper.Save();
             
             yield return SceneManager.LoadSceneAsync(portalID);

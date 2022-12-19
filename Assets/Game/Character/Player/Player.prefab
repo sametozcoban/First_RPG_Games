@@ -80,7 +80,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -2348642413358940849, guid: b3c0ac2162ba6d34787d6fd8fb9fef8f, type: 3}
       propertyPath: startLevel
-      value: 5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -2348642413358940849, guid: b3c0ac2162ba6d34787d6fd8fb9fef8f, type: 3}
       propertyPath: _progression
@@ -105,6 +105,10 @@ PrefabInstance:
     - target: {fileID: 573754210, guid: b3c0ac2162ba6d34787d6fd8fb9fef8f, type: 3}
       propertyPath: m_Enabled
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2493704128592572999, guid: b3c0ac2162ba6d34787d6fd8fb9fef8f, type: 3}
+      propertyPath: m_RootOrder
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3573362970277416470, guid: b3c0ac2162ba6d34787d6fd8fb9fef8f, type: 3}
       propertyPath: m_Name
@@ -193,21 +197,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 3573362970277416470, guid: b3c0ac2162ba6d34787d6fd8fb9fef8f, type: 3}
   m_PrefabInstance: {fileID: 3646815787149107517}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1305861807
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 219327364233211691}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5142c432f8a94390a575797cf505891b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  regenerationPercentage: 70
-  health: -1
-  position: {x: 0, y: 0, z: 0}
 --- !u!114 &4206053524806030714
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -236,6 +225,8 @@ MonoBehaviour:
   - type: 4
     texture: {fileID: 2800000, guid: f8c873f1e53e83f4aabf342d6be1dfc3, type: 3}
     hotspot: {x: 0, y: 0}
+  maxDistance: 1
+  maxPathLength: 40
 --- !u!114 &7545900768963105045
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -3,14 +3,24 @@ using System;
 using RPG.Core;
 using RPG.Stats;
 using UnityEngine;
+using UnityEngine.Events;
+using RPG.UI.DamageText;
 
 namespace RPG.Attributes
 {
     public class Health : MonoBehaviour , ISaveable
     {
         [SerializeField] float regenerationPercentage = 70;
-        [SerializeField] float health = -1f;
+        [SerializeField] TakeDamageEvent takeDamage;
+        [SerializeField] UnityEvent onDie;
         
+        [System.Serializable]
+        public class TakeDamageEvent : UnityEvent<float>
+        {
+        }
+
+       float health = -1f ;
+
         bool isDead = false;
         public Vector3 position;
         
@@ -20,6 +30,7 @@ namespace RPG.Attributes
             if (health < 0)
             {
                 health = GetComponent<BaseStats>().GetStat(Stat.Health);   
+                Debug.Log("Health is : " + health);
             }
         }
         
@@ -29,9 +40,13 @@ namespace RPG.Attributes
             
             if (health == 0)
             {
+                onDie.Invoke();
                 Die();
                 AwardExperince(instigator);
-
+            }
+            else
+            { 
+                takeDamage.Invoke(damage);
             }
             print(health);
         }
@@ -62,7 +77,12 @@ namespace RPG.Attributes
 
         public float HealthPercentage()
         {
-            return 100 * (health / GetComponent<BaseStats>().GetStat(Stat.Health));
+            return 100 * GetFraction();
+        }
+
+        public float GetFraction()
+        {
+            return (health / GetComponent<BaseStats>().GetStat(Stat.Health));
         }
 
         public bool IsDead()

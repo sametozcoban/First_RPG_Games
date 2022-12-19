@@ -20,7 +20,7 @@ namespace RPG.Attributes
         {
             /*String.Format("{0:0}%", health.HealthPercentage()) kullanılma sebebi can azalırken olabildiğince az decimal number olarak gözükmesini sağlamak.
             (Decimal Number = %86.989 gibi gözükmesini istemiyoruz.) */
-            _text.text = String.Format("{0:0}/{1:0", health.GetHealthPoints(), health.GetHealthPoints());
+            _text.text = String.Format("{0:0}/{1:0}", health.GetHealthPoints(), health.GetHealthPoints());
         }
     }
 }
