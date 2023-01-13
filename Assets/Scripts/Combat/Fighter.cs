@@ -19,22 +19,24 @@ namespace RPG.Combat
         [SerializeField] private float timeBetweenAttacks = 1.31f;
         [SerializeField] private Transform righthandTransform = null;
         [SerializeField] private Transform lefthandTransform = null;
-        [SerializeField]  Weapon defaultWeapon = null;
+        [FormerlySerializedAs("defaultWeapon")] [SerializeField]  WeaponConfig defaultWeaponConfig = null;
 
         Transform target;
         private Health _health;
-        LazyValue<Weapon> currentWeapon ;
+        WeaponConfig currentWeaponConfig ;
+        LazyValue<Weapon> currentWeapon;
         private float timeSinceLastAttack = Mathf.Infinity;
 
         private void Awake()
         {
+            currentWeaponConfig = defaultWeaponConfig;
             currentWeapon = new LazyValue<Weapon>(SetupDefaultWeapon);
         }
 
         private Weapon SetupDefaultWeapon()
         {
-            AttachWeapon(defaultWeapon);
-            return defaultWeapon;
+            
+            return AttachWeapon(defaultWeaponConfig);
         }
 
         private void Start()
@@ -55,13 +57,13 @@ namespace RPG.Combat
             
             if (target != null)
             {
-                if (!GetIsInRange())
+                if (!GetIsInRange(target.transform))
                 {
-                    GetComponent<Mover>().MoveTo(target.position ,1f);
+                    GetComponent<Mover>().MoveTo(target.transform.position ,1f);
                 }
                 else 
                 {
-                    GetComponent<Mover>().Cancel(currentWeapon.value.GetRange());
+                    GetComponent<Mover>().Cancel(currentWeaponConfig.GetRange());
                     AttackBehaviour();
                 }
             }
@@ -92,9 +94,14 @@ namespace RPG.Combat
             if(target == null) {return;}
             _health = target.GetComponent<Health>();
             float damage = GetComponent<BaseStats>().GetStat(Stat.Damage);
-            if (currentWeapon.value.HasProjectile()) // Kullanılan if koşulu, silahımızın mermili mi yoksa mermisiz mi olup olmadığı kontrolünü sağlıyor.
+
+            if (currentWeapon.value != null)
             {
-                currentWeapon.value.LaunchProjectile(righthandTransform,lefthandTransform , _health , gameObject, damage);
+                currentWeapon.value.OnHit();
+            }
+            if (currentWeaponConfig.HasProjectile()) // Kullanılan if koşulu, silahımızın mermili mi yoksa mermisiz mi olup olmadığı kontrolünü sağlıyor.
+            {
+                currentWeaponConfig.LaunchProjectile(righthandTransform,lefthandTransform , _health , gameObject, damage);
             }
             else
             {
@@ -108,10 +115,10 @@ namespace RPG.Combat
             Hit();
         }
 
-        private bool GetIsInRange() /* Karakter ile target arasında ki poziyonun uzaklığını true veya false olarak return ettirip
+        private bool GetIsInRange(Transform targetTransform) /* Karakter ile target arasında ki poziyonun uzaklığını true veya false olarak return ettirip
                                      Combat veya Movement methodlarını ona göre çağırdık. */
         {
-            return Vector3.Distance(transform.position, target.position) < currentWeapon.value.GetRange();
+            return Vector3.Distance(transform.position, target.position) < currentWeaponConfig.GetRange();
         }
 
         public void Attack(GameObject combatTarget)
@@ -136,7 +143,7 @@ namespace RPG.Combat
         {
             if (stat == Stat.Damage)
             {
-                yield return currentWeapon.value.GetDamage();
+                yield return currentWeaponConfig.GetDamage();
             }
         }
 
@@ -144,50 +151,47 @@ namespace RPG.Combat
         {
             if (stat == Stat.Damage)
             {
-                yield return currentWeapon.value.GetPercentage();
+                yield return currentWeaponConfig.GetPercentage();
             }
         }
 
         public bool CanAttack(GameObject combatTarget)
        {
-           if (combatTarget == null)
-           {
-               return false;
-           }
-
+           if (combatTarget == null) { return false; }
+           if (!GetComponent<Mover>().CanMoveTo(combatTarget.transform.position) && !GetIsInRange(combatTarget.transform)) { return false; }
            Health targetToTest = combatTarget.GetComponent<Health>();
            return targetToTest != null && !targetToTest.IsDead();
        }
 
-        public void EquippedWeapon(Weapon weapon) /* Karakterimiz doğduğunda eline sword instantiate ediyoruz,
+        public void EquippedWeapon(WeaponConfig weapon) /* Karakterimiz doğduğunda eline sword instantiate ediyoruz,
                                                      Vurmak istediğinde animtor override controller ile sword animasyonuna geçiyoruz. */
         {
-            currentWeapon.value = weapon;
-            AttachWeapon(weapon);
+            currentWeaponConfig = weapon;
+            currentWeapon.value= AttachWeapon(weapon);
         }
 
-        private void AttachWeapon(Weapon weapon)
+        private Weapon AttachWeapon(WeaponConfig weapon)
         {
             Animator animator = GetComponent<Animator>();
-            weapon.Spawn(righthandTransform , lefthandTransform , animator); // Karakter üzerinde bulunan yumruk animasyonunun sword animasyonuna geçtiği kod satırı.
+            return weapon.Spawn(righthandTransform , lefthandTransform , animator); // Karakter üzerinde bulunan yumruk animasyonunun sword animasyonuna geçtiği kod satırı.
         }
 
-        //public Transform GetEnemyHealth() Transform target değiştirilecek. EnemyHealthDisplay kullanılarak hangi düşman seçilmişsse onun canından düşülecek.
-        //                                  Bunun için Transform target değiştirilecek.
-        //{  
-        //    return target;
-        //}
+        public Transform GetEnemyHealth() /*Transform target değiştirilecek. EnemyHealthDisplay kullanılarak hangi düşman seçilmişsse onun canından düşülecek.
+                                            Bunun için Transform target değiştirilecek.*/
+        {  
+            return target;
+        }
 
         public object CaptureState()
         {
-            return currentWeapon.value.name;
+            return currentWeaponConfig.name;
         }
 
         public void RestoreState(object state)
         {
                 string weaponName = (string) state;
-                Weapon weapon = Resources.Load<Weapon>(weaponName); 
-                EquippedWeapon(weapon); 
+                WeaponConfig weaponConfig = Resources.Load<WeaponConfig>(weaponName); 
+                EquippedWeapon(weaponConfig); 
         }
     }
 }

@@ -19,6 +19,7 @@ namespace RPG.Attributes
         [System.Serializable]
         public class TakeDamageEvent : UnityEvent<float>
         {
+           
         }
 
        LazyValue<float> health  ;
@@ -72,6 +73,13 @@ namespace RPG.Attributes
                 takeDamage.Invoke(damage);
             }
             print(health);
+        }
+
+        public void Heal(float healthToRestore)
+        {
+            health.value = Mathf.Min(health.value + healthToRestore , GetMaxHealthPoints());
+            Debug.Log("Benim canım" + health);
+
         }
 
         public float GetHealthPoints()

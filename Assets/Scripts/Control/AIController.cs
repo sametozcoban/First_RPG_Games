@@ -15,11 +15,13 @@ namespace RPG.Control
     {
         [SerializeField] private float chaseDistance = 5f;
         [SerializeField] private float suspicionTime = 3f;
+        [SerializeField] private float AggrevatedTime = 5f;
         [SerializeField] private PatrolWay _patrolWay;
         [SerializeField] private float wayPointTolerance = 5f;
         [SerializeField] private float waitPointTime = 2f;
         [Range(0,1)]
         [SerializeField] private float patrolSpeedFraction = 0.2f;
+        [SerializeField] private float shoutDistance = 5f;
         
         private Fighter _fighter;
         private Health _health;
@@ -29,6 +31,7 @@ namespace RPG.Control
         LazyValue<Vector3> guardPosition;
         private float timeSinceLastSawPlayer = Mathf.Infinity;
         private float timeSinceLastWaintPoint = Mathf.Infinity;
+        private float timeSinceAggrevatedTime = Mathf.Infinity;
         private int currentWayPointIndex = 0;
         private void Awake()
         {
@@ -54,10 +57,11 @@ namespace RPG.Control
         void Update()
         {
             if(_health.IsDead()) return;
-            if (InAttackRange() && _fighter.CanAttack(player))
+            if (IsAggrevated() && _fighter.CanAttack(player))
             {
                 timeSinceLastSawPlayer = 0;
                 AttackBehaviour();
+                
             }
             else if (timeSinceLastSawPlayer < suspicionTime)
             {
@@ -72,10 +76,16 @@ namespace RPG.Control
             UptadeTimers();
         }
 
+        public void Aggrevated()
+        {
+            timeSinceAggrevatedTime = 0;
+        }
+
         private void UptadeTimers()
         {
             timeSinceLastSawPlayer += Time.deltaTime;
             timeSinceLastWaintPoint += Time.deltaTime;
+            timeSinceAggrevatedTime += Time.deltaTime;
         }
 
         private void PatrolBehaviour()
@@ -121,16 +131,32 @@ namespace RPG.Control
 
         private void AttackBehaviour()
         {
+            timeSinceLastSawPlayer = 0;
             _fighter.Attack(player);
+
+            AggrevateNearbyEnemies();
+        }
+
+        private void AggrevateNearbyEnemies()
+        {
+            RaycastHit[] hits = Physics.SphereCastAll(transform.position, shoutDistance, Vector3.up, 0);
+            foreach (RaycastHit hit in hits)
+            {
+                AIController ai = hit.collider.GetComponent<AIController>();
+                
+                if(ai == null) continue;
+
+                ai.Aggrevated();
+            }
         }
 
         /* ---Player ve target arasında ki mesefanin farkı küçük olduğu duruma göre true veya false dönecek.
            ---Uptade methodunda kullandığımız durum devreye girecek.
            ---Player saldırılabilirse figth.Attack() methodu devreye girerek saldırı yapabilecek. */
-        public bool InAttackRange() 
+        public bool IsAggrevated() 
         {
             float distance =  Vector3.Distance(player.transform.position, transform.position);
-            return distance < chaseDistance;
+            return distance < chaseDistance || timeSinceAggrevatedTime < AggrevatedTime;
         }
 
         public void OnDrawGizmosSelected() //Seçili olan gameObject üzerine çizilecek olan gizmos methodu. 

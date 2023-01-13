@@ -9,6 +9,7 @@ using RPG.Combat;
 using RPG.Core;
 using UnityEngine.AI;
 using UnityEngine.EventSystems;
+using UnityEngine.Serialization;
 using UnityEngine.UIElements;
 using Cursor = UnityEngine.Cursor;
 
@@ -32,7 +33,7 @@ namespace RPG.Control
 
         [SerializeField]  CursorMapping[] cursorMapping = null;
         [SerializeField]  float maxDistance = 1f;
-        [SerializeField]  float maxPathLength = 40f;
+        [SerializeField]  float sphereCastRadius = 1f;
 
         private void Start()
         {
@@ -89,7 +90,7 @@ namespace RPG.Control
         RaycastHit[] RayCastAllSorted() /*Uzaklıklara göre cursor değişimini kontrol ettiğimiz kısım.
                                           Arka arkaya bulunan objelerden ilk raycast atılan durumda ikinci objeye raycast atıldığında aynı cursor çıkmamaası durumunun kontorlünün yapıldığı durum. */
         {
-            RaycastHit [] hits = Physics.RaycastAll(ScreenPointToRay());
+            RaycastHit [] hits = Physics.SphereCastAll(ScreenPointToRay(), sphereCastRadius );
             float[] distances = new float[hits.Length]; //hits arrayı uzunluğunda bir array oluşturuyoruz.
 
             for (int i = 0; i < hits.Length; i++)
@@ -112,6 +113,7 @@ namespace RPG.Control
            //bool hasHit = Physics.Raycast(_ray, out hit);
             Vector3 target;
             bool hasHit = RayCastNavMesh(out target);
+            if (!_mover.CanMoveTo(target)) return false;
             if (hasHit) 
             {
                 if ((Input.GetMouseButton(0))) 
@@ -137,33 +139,11 @@ namespace RPG.Control
             if (!navMeshControl) return false;
             
             target = navMeshHit.position;
-
-            NavMeshPath path = new NavMeshPath();
-            bool hasPath = NavMesh.CalculatePath(transform.position, target, NavMesh.AllAreas, path); //Navmesh üzerin de gidilecek yolun hesaplanması.
-
-            if (!hasPath) return false;
-            if (path.status != NavMeshPathStatus.PathComplete) return false;
-            if (GetPathLength(path) > maxPathLength) return false;
             
             return true;
         }
         
-        /* Bu noktada hesaplanan yol gidilebilir olması için belirlenen "GetPathLength(path) > maxPathLength" koşulunu sağlaması için path uzunluğunu bulmak için kullandığımız method.
-        "path.corners" path üzerinde gidilecek olan noktaların Vector3 hali ile tutulmasını sağlıyor.
-        "for" döngüsü kullanarak aralarında ki farkı bulup "total değişkenimize ekliyoruz.
-        "return total" den gelen float değer "GetPathLength(path) > maxPathLength" koşulunu sağlıyor ise hareket edebiliyoruz sağlamıyor ise false değer dönderiyoruz. */
-        private float GetPathLength(NavMeshPath path) 
-        {
-            float total = 0;
-            if (path.corners.Length < 2) return total;
-            for (int i = 0; i < path.corners.Length - 1 ; i++)
-            {
-                total += Vector3.Distance(path.corners[i], path.corners[i + 1]);
-            }
-
-            return total;
-        }
-
+      
         private void SetCursor(CursorType type)
         {
             CursorMapping mapping = GetCursorMapping(type);

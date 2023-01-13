@@ -11,6 +11,10 @@ PrefabInstance:
       propertyPath: weapon
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 2910081186545917299, guid: 941458833da39d842b233b8949fe840c, type: 3}
+      propertyPath: healthToRestore
+      value: 15
+      objectReference: {fileID: 0}
     - target: {fileID: 4120868947540474923, guid: 941458833da39d842b233b8949fe840c, type: 3}
       propertyPath: m_Radius
       value: 0.55
